@@ -22,9 +22,11 @@ pub fn subcommand_defintion() -> App<'static, 'static> {
 }
 
 pub fn run(_global_args: &ArgMatches, sub_args: &ArgMatches) -> Result<()> {
-    let cmd: &str = sub_args.value_of("COMMAND")
+    let cmd: &str = sub_args
+        .value_of("COMMAND")
         .expect("clap should have guaranteed COMMAND was present");
-    let args: Vec<&str> = sub_args.values_of("ARGS")
+    let args: Vec<&str> = sub_args
+        .values_of("ARGS")
         .map_or_else(|| vec![], |vals| vals.collect());
 
     let status = Command::new(cmd)
