@@ -5,29 +5,20 @@
 use std::io;
 use std::io::prelude::*;
 
+use command::Command;
 use errors::*;
-use super::Notifier;
+use super::{Notifier, Outcome};
 
-/// Notify the user of an event using the pushover.net service from
-/// Superblock, LLC.
+/// Notify the user of an event using the console.
 pub struct ConsoleNotifier;
 
-impl ConsoleNotifier {
-    /// Post a message to the API.
-    fn send_message(&self, message: &str) -> Result<()> {
-        writeln!(&mut io::stderr(), "NOTIFICATION: {}", message)
-            .chain_err(|| -> Error { "Could not write to stderr".into() })
-    }
-}
-
 impl Notifier for ConsoleNotifier {
-    /// Let the user know that their process succeed.
-    fn notify_success(&self) -> Result<()> {
-        self.send_message("SUCCESS")
-    }
-
-    /// Let the user know that their process failed.
-    fn notify_failure(&self, err: &Error) -> Result<()> {
-        self.send_message("FAILURE")
+    fn notify(&self, outcome: Outcome, cmd: &Command) -> Result<()> {
+        let label = match outcome {
+            Outcome::Success => "SUCCESS",
+            Outcome::Failure => "FAILURE",
+        };
+        writeln!(&mut io::stderr(), "NOTIFICATION: {}: {}", label, cmd)
+            .chain_err(|| -> Error { "Could not write to stderr".into() })
     }
 }

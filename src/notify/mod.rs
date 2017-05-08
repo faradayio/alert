@@ -5,14 +5,34 @@ use std::env;
 mod console;
 mod pushover;
 
+use command::Command;
 use errors::*;
+
+/// What happened to the process we were running?
+#[derive(Clone, Copy, Debug)]
+pub enum Outcome {
+    /// The process succeeded.
+    Success,
+    /// The process failed.
+    Failure,
+}
+
+impl Outcome {
+    /// Create an `Outcome` from a boolean value indicating whether our
+    /// process succeeded.
+    pub fn from_bool(success: bool) -> Outcome {
+        if success {
+            Outcome::Success
+        } else {
+            Outcome::Failure
+        }
+    }
+}
 
 /// Interface for notifying the user.
 pub trait Notifier {
     /// Let the user know that their process succeed.
-    fn notify_success(&self) -> Result<()>;
-    /// Let the user know that their process failed.
-    fn notify_failure(&self, err: &Error) -> Result<()>;
+    fn notify(&self, outcome: Outcome, cmd: &Command) -> Result<()>;
 }
 
 /// Choose an appropriate notifier backend to use.  We return a `Box`

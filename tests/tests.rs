@@ -21,7 +21,7 @@ fn subcommand_run_reports_success() {
         .args(&["run", "true"])
         .output()
         .expect_success();
-    assert!(output.stderr_str().contains("NOTIFICATION: SUCCESS"));
+    assert!(output.stderr_str().contains("NOTIFICATION: SUCCESS: true"));
 }
 
 #[test]
@@ -34,8 +34,8 @@ fn subcommand_run_reports_failue() {
         .output()
         .expect("could not run command");
     assert!(!output.status.success(), "error should be detected");
-    assert!(output.stderr_str().contains("Error running"));
-    assert!(output.stderr_str().contains("NOTIFICATION: FAILURE"));
+    assert!(output.stderr_str().contains("Could not run"));
+    assert!(output.stderr_str().contains("NOTIFICATION: FAILURE: false"));
 }
 
 #[test]
@@ -48,5 +48,5 @@ fn subcommand_run_handles_command_and_args() {
         .output()
         .expect_success();
     testdir.expect_path("test.txt");
-    assert!(output.stderr_str().contains("NOTIFICATION: SUCCESS"));
+    assert!(output.stderr_str().contains("NOTIFICATION: SUCCESS: touch test.txt"));
 }

@@ -8,8 +8,9 @@
 use reqwest;
 use std::env;
 
+use command::Command;
 use errors::*;
-use super::Notifier;
+use super::{Notifier, Outcome};
 
 /// Notify the user of an event using the pushover.net service from
 /// Superblock, LLC.
@@ -28,13 +29,21 @@ impl PushoverNotifier {
                user: env::var("PUSHOVER_USER")?,
            })
     }
+}
 
-    /// Post a message to the API.
-    fn send_message(&self, message: &str) -> Result<()> {
+impl Notifier for PushoverNotifier {
+    fn notify(&self, outcome: Outcome, cmd: &Command) -> Result<()> {
+        let (title, sound) = match outcome {
+            Outcome::Success => ("Command succeeded", "classical"),
+            Outcome::Failure => ("Command failed", "tugboat"),
+        };
+
         let client = reqwest::Client::new()?;
         let params = [("token", &self.token[..]),
                       ("user", &self.user[..]),
-                      ("message", message)];
+                      ("title", title),
+                      ("sound", sound),
+                      ("message", &format!("{}", cmd)[..])];
         let response = client
             .post("https://api.pushover.net/1/messages.json")
             .form(&params)
@@ -44,17 +53,5 @@ impl PushoverNotifier {
         } else {
             Err("could not send notification using pushover.net".into())
         }
-    }
-}
-
-impl Notifier for PushoverNotifier {
-    /// Let the user know that their process succeed.
-    fn notify_success(&self) -> Result<()> {
-        self.send_message("Success!")
-    }
-
-    /// Let the user know that their process failed.
-    fn notify_failure(&self, err: &Error) -> Result<()> {
-        self.send_message("Failure!")
     }
 }

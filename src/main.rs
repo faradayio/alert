@@ -14,10 +14,12 @@ extern crate log;
 extern crate notify_rust;
 extern crate regex;
 extern crate reqwest;
+extern crate shell_escape;
 
 use clap::{App, AppSettings};
 
 mod cmd_run;
+mod command;
 mod errors;
 mod notify;
 
@@ -45,16 +47,8 @@ fn run() -> Result<()> {
     let notifier = choose_notifier()?;
 
     // Run a subcommand.
-    let result = match matches.subcommand() {
-        ("run", Some(sub_args)) => cmd_run::run(&matches, sub_args),
+    match matches.subcommand() {
+        ("run", Some(sub_args)) => cmd_run::run(&matches, sub_args, notifier.as_ref()),
         (_, _) => unreachable!("unimplemented subcommand"),
-    };
-
-    // Notify the user about what happened.
-    match result {
-        Ok(()) => notifier.notify_success()?,
-        Err(ref err) => notifier.notify_failure(err)?,
     }
-
-    result
 }
