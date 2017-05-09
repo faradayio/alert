@@ -23,9 +23,7 @@ fn subcommand_run_reports_success() {
         .args(&["run", "true"])
         .output()
         .expect_success();
-    assert!(output
-                .stderr_str()
-                .contains("Command succeeded: true"));
+    assert!(output.stderr_str().contains("Command succeeded: true"));
 }
 
 #[test]
@@ -40,9 +38,7 @@ fn subcommand_run_reports_failure() {
         .expect("could not run command");
     assert!(!output.status.success(), "error should be detected");
     assert!(output.stderr_str().contains("Could not run"));
-    assert!(output
-                .stderr_str()
-                .contains("Command failed: false"));
+    assert!(output.stderr_str().contains("Command failed: false"));
 }
 
 #[test]
@@ -99,9 +95,7 @@ fn subcommand_watch_matches_failure_pattern() {
         .output()
         .expect("could not run command");
     assert!(!output.status.success());
-    assert!(output
-                .stderr_str()
-                .contains("Command failed: echo bad"));
+    assert!(output.stderr_str().contains("Command failed: echo bad"));
 }
 
 #[test]
@@ -115,9 +109,7 @@ fn subcommand_watch_times_out() {
         .output()
         .expect("could not run command");
     assert!(!output.status.success());
-    assert!(output
-                .stderr_str()
-                .contains("Command timed out: true"));
+    assert!(output.stderr_str().contains("Command timed out: true"));
 }
 
 // TODO: File an issue for `expect_failure` against `cli_test_dir`.

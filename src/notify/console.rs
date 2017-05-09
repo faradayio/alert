@@ -21,9 +21,9 @@ impl Notifier for ConsoleNotifier {
             Outcome::Failure | Outcome::Timeout => label.red().bold(),
         };
         writeln!(&mut io::stderr(),
-            "{} {}",
-            color_label,
-            notification.message().bold())
-            .chain_err(|| -> Error { "Could not write to stderr".into() })
+                 "{} {}",
+                 color_label,
+                 notification.message().bold())
+                .chain_err(|| -> Error { "Could not write to stderr".into() })
     }
 }
