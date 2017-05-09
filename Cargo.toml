@@ -1,7 +1,14 @@
 [package]
 name = "alert"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Eric Kidd <git@randomhacks.net>"]
+
+description = "Run commands and report their results to your phone or desktop"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/faradayio/alert"
+#documentation = "https://docs.rs/alert/"
+#homepage = ""
 
 [features]
 default = []
@@ -12,7 +19,7 @@ cli_test_dir = "0.1.1"
 [dependencies]
 clap = "2.24.1"
 # Enable this by passing `--features "clippy"` to cargo.  Needs nightly Rust.
-clippy = { version = "*", optional = true }
+clippy = { version = "0.0.*", optional = true }
 error-chain = "0.10.0"
 env_logger = "0.4.2"
 log = "0.3.7"
