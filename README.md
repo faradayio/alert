@@ -23,7 +23,7 @@ excellent, hard-to-miss notifications for iOS, Android and web browsers.
 
 [Pushover]: https://pushover.net/
 
-## Wishlist
+## Wish list
 
 Some features which we want to add:
 

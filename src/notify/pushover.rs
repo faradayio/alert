@@ -36,6 +36,7 @@ impl Notifier for PushoverNotifier {
         let (title, sound) = match outcome {
             Outcome::Success => ("Command succeeded", "classical"),
             Outcome::Failure => ("Command failed", "tugboat"),
+            Outcome::Timeout => ("Command timed out", "tugboat"),
         };
 
         let client = reqwest::Client::new()?;

@@ -15,6 +15,8 @@ pub enum Outcome {
     Success,
     /// The process failed.
     Failure,
+    /// We timed out waiting for something to happen.
+    Timeout,
 }
 
 impl Outcome {

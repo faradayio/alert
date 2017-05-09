@@ -17,8 +17,9 @@ impl Notifier for ConsoleNotifier {
         let label = match outcome {
             Outcome::Success => "SUCCESS",
             Outcome::Failure => "FAILURE",
+            Outcome::Timeout => "TIMEOUT",
         };
-        writeln!(&mut io::stderr(), "NOTIFICATION: {}: {}", label, cmd)
+        writeln!(&mut io::stderr(), "{}: {}", label, cmd)
             .chain_err(|| -> Error { "Could not write to stderr".into() })
     }
 }

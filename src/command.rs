@@ -18,34 +18,31 @@ pub struct Command {
 
 impl Command {
     /// Generate `clap::Arg` values which will match a command name and
-    /// optional arguments.
+    /// optional arguments.  You also need to call
+    /// `setting(AppSettings::TrailingVarArg)` on your subcommand to avoid
+    /// the user needing to specify "--".
     pub fn clap_args() -> Vec<Arg<'static, 'static>> {
+        // We need to do this as a single argument if we want
+        // `AppSettings::TrailingVarArg` to work.
         let command_arg = Arg::with_name("COMMAND")
-            .help("The command to run")
-            .required(true);
-        let args_arg = Arg::with_name("ARGS")
-            .help("Arguments to pass to the command")
+            .help("The command to run, and any arguments")
+            .required(true)
             .multiple(true);
-        vec![command_arg, args_arg]
+        vec![command_arg]
     }
 
     /// Given a `clap::ArgMatches`, create a new `Command`.
     pub fn from_arg_matches(arg_matches: &ArgMatches) -> Result<Command> {
-        let cmd: &str = arg_matches
-            .value_of("COMMAND")
-            .ok_or_else(|| -> Error {
-                "No command specified".into()
-            })?;
         let mut args: Vec<String> = vec![];
-        if let Some(arg_iter) = arg_matches.values_of("ARGS") {
+        if let Some(arg_iter) = arg_matches.values_of("COMMAND") {
             for arg in arg_iter {
                 args.push(arg.to_owned());
             }
         }
         Ok(Command {
-            cmd: cmd.to_owned(),
-            args: args,
-        })
+               cmd: args[0].clone(),
+               args: args[1..].to_owned(),
+           })
     }
 }
 

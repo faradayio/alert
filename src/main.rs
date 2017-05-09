@@ -19,6 +19,7 @@ extern crate shell_escape;
 use clap::{App, AppSettings};
 
 mod cmd_run;
+mod cmd_watch;
 mod command;
 mod errors;
 mod notify;
@@ -36,7 +37,8 @@ fn run() -> Result<()> {
         .version(env!("CARGO_PKG_VERSION"))
         .author("Eric Kidd")
         .about("Runs processes and notifies you about what happened")
-        .subcommand(cmd_run::subcommand_defintion())
+        .subcommand(cmd_run::subcommand_definition())
+        .subcommand(cmd_watch::subcommand_definition())
         .setting(AppSettings::SubcommandRequiredElseHelp);
     let matches = app.get_matches();
     debug!("Arguments: {:#?}", &matches);
@@ -49,6 +51,9 @@ fn run() -> Result<()> {
     // Run a subcommand.
     match matches.subcommand() {
         ("run", Some(sub_args)) => cmd_run::run(&matches, sub_args, notifier.as_ref()),
+        ("watch", Some(sub_args)) => {
+            cmd_watch::run(&matches, sub_args, notifier.as_ref())
+        }
         (_, _) => unreachable!("unimplemented subcommand"),
     }
 }

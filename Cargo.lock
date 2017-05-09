@@ -1,6 +1,6 @@
 [root]
 name = "alert"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "clap 2.24.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "cli_test_dir 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
