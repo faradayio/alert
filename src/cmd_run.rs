@@ -5,7 +5,7 @@ use std::process;
 
 use command::Command;
 use errors::*;
-use notify::{Notifier, Outcome};
+use notify::{Notification, Notifier, Outcome};
 
 /// Return a `clap::SubCommand` specifying our arguments.
 pub fn subcommand_definition() -> App<'static, 'static> {
@@ -27,8 +27,9 @@ pub fn run(_global_args: &ArgMatches,
         .args(&cmd.args)
         .status()
         .chain_err(|| ErrorKind::CouldNotRun((&cmd).to_owned()))?;
-    notifier
-        .notify(Outcome::from_bool(status.success()), &cmd)?;
+    let notification = Notification::new(Outcome::from_bool(status.success()))
+        .command(cmd.to_owned());
+    notifier.send(&notification)?;
     if status.success() {
         Ok(())
     } else {

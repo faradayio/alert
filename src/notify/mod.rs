@@ -3,10 +3,61 @@
 use std::env;
 
 mod console;
+#[cfg(feature = "notify-rust")]
+mod desktop;
 mod pushover;
 
 use command::Command;
 use errors::*;
+
+/// A notification we want to send to the user.
+#[derive(Clone, Debug)]
+pub struct Notification {
+    outcome: Outcome,
+    command: Option<Command>,
+}
+
+impl Notification {
+    /// Create a new notification.
+    pub fn new(outcome: Outcome) -> Notification {
+        Notification {
+            outcome: outcome,
+            command: None,
+        }
+    }
+
+    /// Specify the command for a newly-created notification, using
+    /// the builder pattern.
+    pub fn command(mut self, command: Command) -> Notification {
+        self.command = Some(command);
+        self
+    }
+
+    /// Get the outcome associated with this notification, in case a
+    /// particular notifier wishes to further customize message options
+    /// like sounds or colors.
+    pub fn outcome(&self) -> Outcome {
+        self.outcome
+    }
+
+    /// Generate a title for this notification.
+    pub fn title(&self) -> String {
+        match self.outcome {
+            Outcome::Success => "Command succeeded".to_owned(),
+            Outcome::Failure => "Command failed".to_owned(),
+            Outcome::Timeout => "Command timed out".to_owned(),
+        }
+    }
+
+    /// Generate a message body for this notification.
+    pub fn message(&self) -> String {
+        let mut lines = vec![];
+        if let Some(ref command) = self.command {
+            lines.push(format!("{}", command));
+        }
+        lines.join("\n")
+    }
+}
 
 /// What happened to the process we were running?
 #[derive(Clone, Copy, Debug)]
@@ -34,7 +85,7 @@ impl Outcome {
 /// Interface for notifying the user.
 pub trait Notifier {
     /// Let the user know that their process succeed.
-    fn notify(&self, outcome: Outcome, cmd: &Command) -> Result<()>;
+    fn send(&self, notification: &Notification) -> Result<()>;
 }
 
 /// Choose an appropriate notifier backend to use.  We return a `Box`
@@ -44,6 +95,8 @@ pub fn choose_notifier() -> Result<Box<Notifier>> {
     let name = env::var("ALERT_NOTIFIER").unwrap_or_else(|_| "pushover".to_owned());
     match &name[..] {
         "console" => Ok(Box::new(console::ConsoleNotifier)),
+        #[cfg(feature = "notify-rust")]
+        "desktop" => Ok(Box::new(desktop::DesktopNotifier)),
         "pushover" => Ok(Box::new(pushover::PushoverNotifier::new()?)),
         _ => Err(format!("Unknown notifier: {}", name).into()),
     }

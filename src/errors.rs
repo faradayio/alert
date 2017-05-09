@@ -1,5 +1,7 @@
 //! Custom error types using the `error-chain` crate.
 
+#[cfg(feature = "notify-rust")]
+use notify_rust;
 use regex;
 use reqwest;
 use std::env;
@@ -10,6 +12,7 @@ use command::Command;
 error_chain! {
     // Wrap errors provided by other libraries.
     foreign_links {
+        Desktop(notify_rust::Error) #[cfg(feature = "notify-rust")];
         Env(env::VarError);
         ParseInt(num::ParseIntError);
         Regex(regex::Error);

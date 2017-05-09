@@ -10,7 +10,7 @@ use std::time;
 
 use command::Command;
 use errors::*;
-use notify::{Notifier, Outcome};
+use notify::{Notification, Notifier, Outcome};
 
 /// Return a `clap::SubCommand` specifying our arguments.
 pub fn subcommand_definition() -> App<'static, 'static> {
@@ -109,7 +109,9 @@ pub fn run(_global_args: &ArgMatches,
                 for line in &all_lines {
                     if let Some(ref re) = failure_re {
                         if re.is_match(&line) {
-                            notifier.notify(Outcome::Failure, &cmd)?;
+                            let notification = Notification::new(Outcome::Failure)
+                                .command(cmd.clone());
+                            notifier.send(&notification)?;
                             // TODO: We may want a more orderly exit here.
                             process::exit(1);
                         }
@@ -120,7 +122,9 @@ pub fn run(_global_args: &ArgMatches,
                 for line in &all_lines {
                     if let Some(ref re) = success_re {
                         if re.is_match(&line) {
-                            notifier.notify(Outcome::Success, &cmd)?;
+                            let notification = Notification::new(Outcome::Success)
+                                .command(cmd.clone());
+                            notifier.send(&notification)?;
                             return Ok(());
                         }
                     }
@@ -131,7 +135,9 @@ pub fn run(_global_args: &ArgMatches,
         // Check our timeout.
         if let Some(end) = end {
             if time::SystemTime::now() >= end {
-                notifier.notify(Outcome::Timeout, &cmd)?;
+                let notification = Notification::new(Outcome::Timeout)
+                    .command(cmd.clone());
+                notifier.send(&notification)?;
                 // TODO: We may want a more orderly exit here.
                 process::exit(1);
             }

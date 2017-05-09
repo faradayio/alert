@@ -10,7 +10,7 @@ use std::env;
 
 use command::Command;
 use errors::*;
-use super::{Notifier, Outcome};
+use super::{Notification, Notifier, Outcome};
 
 /// Notify the user of an event using the pushover.net service from
 /// Superblock, LLC.
@@ -32,19 +32,18 @@ impl PushoverNotifier {
 }
 
 impl Notifier for PushoverNotifier {
-    fn notify(&self, outcome: Outcome, cmd: &Command) -> Result<()> {
-        let (title, sound) = match outcome {
-            Outcome::Success => ("Command succeeded", "classical"),
-            Outcome::Failure => ("Command failed", "tugboat"),
-            Outcome::Timeout => ("Command timed out", "tugboat"),
+    fn send(&self, notification: &Notification) -> Result<()> {
+        let sound = match notification.outcome() {
+            Outcome::Success => "classical",
+            Outcome::Failure | Outcome::Timeout => "tugboat",
         };
 
         let client = reqwest::Client::new()?;
         let params = [("token", &self.token[..]),
                       ("user", &self.user[..]),
-                      ("title", title),
+                      ("title", &notification.title()),
                       ("sound", sound),
-                      ("message", &format!("{}", cmd)[..])];
+                      ("message", &notification.message())];
         let response = client
             .post("https://api.pushover.net/1/messages.json")
             .form(&params)

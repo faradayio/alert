@@ -6,11 +6,13 @@
 #![cfg_attr(feature="clippy", plugin(clippy))]
 
 extern crate clap;
+extern crate colored;
 #[macro_use]
 extern crate error_chain;
 extern crate env_logger;
 #[macro_use]
 extern crate log;
+#[cfg(feature = "notify-rust")]
 extern crate notify_rust;
 extern crate regex;
 extern crate reqwest;
