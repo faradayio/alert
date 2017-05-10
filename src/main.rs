@@ -16,7 +16,11 @@ extern crate log;
 extern crate notify_rust;
 extern crate regex;
 extern crate reqwest;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 extern crate shell_escape;
+extern crate toml;
 
 use clap::{App, AppSettings};
 use std::process;
@@ -24,6 +28,7 @@ use std::process;
 mod cmd_run;
 mod cmd_watch;
 mod command;
+mod config;
 mod errors;
 mod notify;
 
@@ -66,8 +71,12 @@ fn run() -> Result<()> {
         if let ErrorKind::CommandFailedOrTimedOut(ref status) = *err.kind() {
             // We've already notified the user of this failure, but we still
             // need to exit with the right status code.
+            //
+            // TODO: We might be able to use Unix-specific Rust APIs to
+            // preserve the exit status when the child process is terminate
+            // by a signal, too.
             let code = status.and_then(|s| s.code()).unwrap_or(1);
-            info!("Exiting with code {}", code);
+            debug!("Exiting with code {}", code);
             process::exit(code);
         }
     }
