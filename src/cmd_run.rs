@@ -33,6 +33,6 @@ pub fn run(_global_args: &ArgMatches,
     if status.success() {
         Ok(())
     } else {
-        Err(ErrorKind::CouldNotRun(cmd).into())
+        Err(ErrorKind::CommandFailedOrTimedOut(Some(status)).into())
     }
 }

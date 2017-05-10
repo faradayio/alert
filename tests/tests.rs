@@ -37,7 +37,6 @@ fn subcommand_run_reports_failure() {
         .output()
         .expect("could not run command");
     assert!(!output.status.success(), "error should be detected");
-    assert!(output.stderr_str().contains("Could not run"));
     assert!(output.stderr_str().contains("Command failed: false"));
 }
 
@@ -114,4 +113,3 @@ fn subcommand_watch_times_out() {
 
 // TODO: File an issue for `expect_failure` against `cli_test_dir`.
 // TODO: User can include an extra message.
-// TODO: Better error printing behavior for various failure cases, and no exit(1).

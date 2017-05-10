@@ -12,37 +12,37 @@ when things succeed or fail:
 export PUSHOVER_TOKEN=...
 # Supply your pushover.net user key.
 export PUSHOVER_USER=...
+
+# Run a command and report what happens.
 alert run my_long_running_command
+
+# Run a command repeatedly, looking for outputs that indicate success or
+# failure.
+alert watch -s 'myjob.*failed' -f 'myjob.*success' --timout 300 \
+    pachctl list-jobs
 ```
 
 This will play different sounds for success and failure.
 
-Right now, we only support Superblock, LLC's [Pushover][] system, which provides
+Right now, we support Superblock, LLC's [Pushover][] system, which provides
 excellent, hard-to-miss notifications for iOS, Android and web browsers.
-(This application has no relation to Superblock, LLC. We just use their API.)
+(This application has no relation to Superblock, LLC. We just use their
+API.)
+
+We also have support for desktop notifiations and the open
+source [Notify][] app, but the CLI for configurating them isn't finished
+yet.
 
 [Pushover]: https://pushover.net/
+[Notify]: https://mashlol.github.io/notify/
 
 ## Wish list
 
 Some features which we want to add:
 
-```sh
-# Periodically poll commands and read their output.
-alert watch -n 5 -s 'myjob.*failed' -f 'myjob.*success' \
-    --timout 10m \
-    pachctl list-jobs
-```
-
-We'd also list to add:
-
-- Support for desktop notifications on OS X and Linux.
-- Support for free phone notifications using [notify-cli][]'s API.  These
-  are less portable than Pushover's notifications and they have fewer options
-  for playing loud and obnoxious sounds, but they're free.
+- A command-line interface for configuring notification backends easily.
+- Terminal support for `alert watch`.
 - Maybe some sort of mode for watching to see when a host has finished booting?
-
-[notify-cli]: https://github.com/mashlol/notify
 
 ## Installing
 

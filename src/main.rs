@@ -19,6 +19,7 @@ extern crate reqwest;
 extern crate shell_escape;
 
 use clap::{App, AppSettings};
+use std::process;
 
 mod cmd_run;
 mod cmd_watch;
@@ -51,11 +52,24 @@ fn run() -> Result<()> {
     let notifier = choose_notifier()?;
 
     // Run a subcommand.
-    match matches.subcommand() {
+    let result = match matches.subcommand() {
         ("run", Some(sub_args)) => cmd_run::run(&matches, sub_args, notifier.as_ref()),
         ("watch", Some(sub_args)) => {
             cmd_watch::run(&matches, sub_args, notifier.as_ref())
         }
         (_, _) => unreachable!("unimplemented subcommand"),
+    };
+
+    // Handle `CommandFailedOrTimedOut` specially, and pass everything else
+    // through to `quick_main!`.
+    if let Err(ref err) = result {
+        if let ErrorKind::CommandFailedOrTimedOut(ref status) = *err.kind() {
+            // We've already notified the user of this failure, but we still
+            // need to exit with the right status code.
+            let code = status.and_then(|s| s.code()).unwrap_or(1);
+            info!("Exiting with code {}", code);
+            process::exit(code);
+        }
     }
+    result
 }

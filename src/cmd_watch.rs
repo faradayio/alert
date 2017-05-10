@@ -112,8 +112,8 @@ pub fn run(_global_args: &ArgMatches,
                             let notification = Notification::new(Outcome::Failure)
                                 .command(cmd.clone());
                             notifier.send(&notification)?;
-                            // TODO: We may want a more orderly exit here.
-                            process::exit(1);
+                            return Err(ErrorKind::CommandFailedOrTimedOut(None)
+                                           .into());
                         }
                     }
                 }
@@ -138,8 +138,7 @@ pub fn run(_global_args: &ArgMatches,
                 let notification = Notification::new(Outcome::Timeout)
                     .command(cmd.clone());
                 notifier.send(&notification)?;
-                // TODO: We may want a more orderly exit here.
-                process::exit(1);
+                return Err(ErrorKind::CommandFailedOrTimedOut(None).into());
             }
         }
 
