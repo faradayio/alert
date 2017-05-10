@@ -104,7 +104,7 @@ fn subcommand_watch_times_out() {
     let testdir = TestDir::new("alert", "subcommand_watch_matches_failure_pattern");
     let output = testdir
         .cmd()
-        .args(&["watch", "-t", "1", "true"])
+        .args(&["watch", "-t", "0", "true"])
         .output()
         .expect("could not run command");
     assert!(!output.status.success());
