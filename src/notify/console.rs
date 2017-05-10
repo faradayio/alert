@@ -6,7 +6,6 @@ use colored::*;
 use std::io;
 use std::io::prelude::*;
 
-use command::Command;
 use errors::*;
 use super::{Notification, Notifier, Outcome};
 

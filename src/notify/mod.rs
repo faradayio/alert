@@ -5,6 +5,7 @@ use std::env;
 mod console;
 #[cfg(feature = "notify-rust")]
 mod desktop;
+mod notifyapp;
 mod pushover;
 
 use command::Command;
@@ -97,6 +98,7 @@ pub fn choose_notifier() -> Result<Box<Notifier>> {
         "console" => Ok(Box::new(console::ConsoleNotifier)),
         #[cfg(feature = "notify-rust")]
         "desktop" => Ok(Box::new(desktop::DesktopNotifier)),
+        "notifyapp" => Ok(Box::new(notifyapp::NotifyAppNotifier::new()?)),
         "pushover" => Ok(Box::new(pushover::PushoverNotifier::new()?)),
         _ => Err(format!("Unknown notifier: {}", name).into()),
     }

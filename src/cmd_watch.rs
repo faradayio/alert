@@ -108,7 +108,7 @@ pub fn run(_global_args: &ArgMatches,
                 // Check for failure first so it takes priority.
                 for line in &all_lines {
                     if let Some(ref re) = failure_re {
-                        if re.is_match(&line) {
+                        if re.is_match(line) {
                             let notification = Notification::new(Outcome::Failure)
                                 .command(cmd.clone());
                             notifier.send(&notification)?;
@@ -121,7 +121,7 @@ pub fn run(_global_args: &ArgMatches,
                 // Check for success.
                 for line in &all_lines {
                     if let Some(ref re) = success_re {
-                        if re.is_match(&line) {
+                        if re.is_match(line) {
                             let notification = Notification::new(Outcome::Success)
                                 .command(cmd.clone());
                             notifier.send(&notification)?;

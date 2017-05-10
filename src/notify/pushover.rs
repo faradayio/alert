@@ -8,7 +8,6 @@
 use reqwest;
 use std::env;
 
-use command::Command;
 use errors::*;
 use super::{Notification, Notifier, Outcome};
 
