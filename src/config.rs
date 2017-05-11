@@ -9,9 +9,10 @@ pub struct Config {
     notifiers: HashMap<String, NotifierConfig>,
 }
 
+/// Per-backend configuration.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NotifierConfig {
     enabled: bool,
-    backend: String,
+    backend: Option<String>,
     options: HashMap<String, String>,
 }

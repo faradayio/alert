@@ -33,7 +33,9 @@ impl Notifier for NotifyAppNotifier {
                                               ("title", &notification.title()),
                                               ("text", &notification.message())])?;
 
+        debug!("Sending notification via Notify app");
         let response = client.get(url.as_str()).send()?;
+        debug!("Notify response: {:?}", response.status());
         if response.status().is_success() {
             Ok(())
         } else {

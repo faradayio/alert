@@ -43,10 +43,12 @@ impl Notifier for PushoverNotifier {
                       ("title", &notification.title()),
                       ("sound", sound),
                       ("message", &notification.message())];
+        debug!("Sending notification via pushover");
         let response = client
             .post("https://api.pushover.net/1/messages.json")
             .form(&params)
             .send()?;
+        debug!("Pushover response: {:?}", response.status());
         if response.status().is_success() {
             Ok(())
         } else {

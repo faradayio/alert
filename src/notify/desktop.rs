@@ -10,10 +10,12 @@ pub struct DesktopNotifier;
 
 impl Notifier for DesktopNotifier {
     fn send(&self, notification: &Notification) -> Result<()> {
+        debug!("Sending notification to desktop");
         notify_rust::Notification::new()
             .summary(&notification.title())
             .body(&notification.message())
             .show()?;
+        debug!("Sent notification to desktop");
         Ok(())
     }
 }
