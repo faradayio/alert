@@ -37,7 +37,7 @@ impl Notifier for PushoverNotifier {
             Outcome::Failure | Outcome::Timeout => "tugboat",
         };
 
-        let client = reqwest::Client::new()?;
+        let client = reqwest::blocking::Client::new();
         let params = [("token", &self.token[..]),
                       ("user", &self.user[..]),
                       ("title", &notification.title()),

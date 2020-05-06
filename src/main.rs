@@ -38,7 +38,7 @@ use notify::choose_notifier;
 quick_main!(run);
 
 fn run() -> Result<()> {
-    env_logger::init().expect("could not initialize log subsystem");
+    env_logger::init();
 
     // Parse our command-line arguments.
     let app = App::new("alert")

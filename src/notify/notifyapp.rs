@@ -24,7 +24,7 @@ impl NotifyAppNotifier {
 
 impl Notifier for NotifyAppNotifier {
     fn send(&self, notification: &Notification) -> Result<()> {
-        let client = reqwest::Client::new()?;
+        let client = reqwest::blocking::Client::new();
 
         let base_url = "https://appnotify.herokuapp.com/notify";
         let url =

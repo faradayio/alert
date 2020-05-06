@@ -18,7 +18,7 @@ error_chain! {
         ParseInt(num::ParseIntError);
         Regex(regex::Error);
         Reqwest(reqwest::Error);
-        ReqwestUrl(reqwest::UrlError);
+        Url(url::ParseError);
     }
 
     errors {
