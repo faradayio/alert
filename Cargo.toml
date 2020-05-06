@@ -21,8 +21,6 @@ cli_test_dir = "0.1.1"
 
 [dependencies]
 clap = "2.24.1"
-# Enable this by passing `--features "clippy"` to cargo.  Needs nightly Rust.
-clippy = { version = "0.0.*", optional = true }
 colored = "1.5.1"
 error-chain = "0.12.2"
 env_logger = "0.7.1"
