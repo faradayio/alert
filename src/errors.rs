@@ -57,6 +57,10 @@ pub enum Error {
         source: io::Error,
     },
 
+    /// No command to run was specified.
+    #[error("No command to run was specified")]
+    NoCommandSpecified,
+
     /// The user requested an unknown notification backend.
     #[error("Unknown notifier: {}", .name)]
     UnknownNotifier { name: String },

@@ -1,29 +1,27 @@
 //! Our `alert run` subcommand.
 
-use clap::{App, AppSettings, ArgMatches, SubCommand};
+use clap::AppSettings;
 use std::process;
+use structopt::StructOpt;
 
 use crate::command::Command;
 use crate::errors::*;
 use crate::notify::{Notification, Notifier, Outcome};
 
-/// Return a `clap::SubCommand` specifying our arguments.
-pub fn subcommand_definition() -> App<'static, 'static> {
-    // Build our subcommand.
-    SubCommand::with_name("run")
-        .about("Runs a command and notifies when it finishes")
-        .setting(AppSettings::DisableVersion)
-        // Essential: Don't require "--" before `CMD ARGS...`.
-        .setting(AppSettings::TrailingVarArg)
-        .args(&Command::clap_args())
+/// Options for `run`.
+#[derive(Debug, StructOpt)]
+#[structopt(
+    about = "Runs a command and notifies when it finishes",
+    // Essential: Don't require "--" before `CMD...`.
+    setting(AppSettings::TrailingVarArg)
+)]
+pub struct Opt {
+    /// The command to run, with any arguments.
+    cmd: Vec<String>,
 }
 
-pub fn run(
-    _global_args: &ArgMatches<'_>,
-    sub_args: &ArgMatches<'_>,
-    notifier: &dyn Notifier,
-) -> Result<()> {
-    let cmd = Command::from_arg_matches(sub_args)?;
+pub fn run(opt: &Opt, notifier: &dyn Notifier) -> Result<()> {
+    let cmd = Command::from_slice(&opt.cmd)?;
     let status = process::Command::new(&cmd.cmd)
         .args(&cmd.args)
         .status()

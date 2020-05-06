@@ -4,6 +4,7 @@
 use clap::{App, AppSettings};
 use log::debug;
 use std::process;
+use structopt::StructOpt;
 
 mod cmd_run;
 mod cmd_watch;
@@ -14,6 +15,23 @@ mod notify;
 
 use crate::errors::*;
 use crate::notify::choose_notifier;
+
+/// Our command-line options.
+#[derive(Debug, StructOpt)]
+#[structopt(about = "Runs processes and notifies you about what happened")]
+enum Opt {
+    /// Runs a command and notifies when it finishes.
+    Run {
+        #[structopt(flatten)]
+        run_opt: cmd_run::Opt,
+    },
+
+    /// Runs a command repeatedly and watches for output.
+    Watch {
+        #[structopt(flatten)]
+        watch_opt: cmd_watch::Opt,
+    },
+}
 
 fn main() {
     if let Err(err) = run() {
@@ -28,15 +46,8 @@ fn run() -> Result<()> {
     env_logger::init();
 
     // Parse our command-line arguments.
-    let app = App::new("alert")
-        .version(env!("CARGO_PKG_VERSION"))
-        .author("Eric Kidd")
-        .about("Runs processes and notifies you about what happened")
-        .subcommand(cmd_run::subcommand_definition())
-        .subcommand(cmd_watch::subcommand_definition())
-        .setting(AppSettings::SubcommandRequiredElseHelp);
-    let matches = app.get_matches();
-    debug!("Arguments: {:#?}", &matches);
+    let opt = Opt::from_args();
+    debug!("Arguments: {:#?}", opt);
 
     // Create our notifier _now_ before running any multi-hour subcommands, so
     // that it has a chance to make sure it's configured correctly while the
@@ -44,12 +55,9 @@ fn run() -> Result<()> {
     let notifier = choose_notifier()?;
 
     // Run a subcommand.
-    let result = match matches.subcommand() {
-        ("run", Some(sub_args)) => cmd_run::run(&matches, sub_args, notifier.as_ref()),
-        ("watch", Some(sub_args)) => {
-            cmd_watch::run(&matches, sub_args, notifier.as_ref())
-        }
-        (_, _) => unreachable!("unimplemented subcommand"),
+    let result = match &opt {
+        Opt::Run { run_opt } => cmd_run::run(run_opt, notifier.as_ref()),
+        Opt::Watch { watch_opt } => cmd_watch::run(watch_opt, notifier.as_ref()),
     };
 
     // Handle `CommandFailedOrTimedOut` specially, and pass everything else

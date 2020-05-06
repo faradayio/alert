@@ -1,82 +1,58 @@
 //! Our `alert run` subcommand.
 
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use clap::AppSettings;
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
 use std::process;
 use std::thread;
 use std::time;
+use structopt::StructOpt;
 
 use crate::command::Command;
 use crate::errors::*;
 use crate::notify::{Notification, Notifier, Outcome};
 
-/// Return a `clap::SubCommand` specifying our arguments.
-pub fn subcommand_definition() -> App<'static, 'static> {
-    let success_arg = Arg::with_name("success")
-        .short("s")
-        .long("success")
-        .value_name("SUCCESS_REGEX")
-        .help("Report success when matching text appears");
-    let failure_arg = Arg::with_name("failure")
-        .short("f")
-        .long("failure")
-        .value_name("FAILURE_REGEX")
-        .help("Report failure when matching text appears");
-    let timeout_arg = Arg::with_name("timeout")
-        .short("t")
-        .long("timeout")
-        .value_name("SECONDS")
-        .help("Give up if nothing happens after a wait");
-    let interval_arg = Arg::with_name("interval")
-        .short("n")
-        .long("interval")
-        .value_name("SECONDS")
-        .default_value("2")
-        .help("Time to wait between runs");
+/// Options for `watch`.
+#[derive(Debug, StructOpt)]
+#[structopt(
+    about = "Runs a command repeatedly and watches for output",
+    // Essential: Don't require "--" before `CMD...`.
+    setting(AppSettings::TrailingVarArg)
+)]
+pub struct Opt {
+    /// Report success when matching text appears.
+    #[structopt(short = "s", long = "success", value_name = "SUCCESS_REGEX")]
+    success: Option<Regex>,
 
-    // Build our subcommand.
-    SubCommand::with_name("watch")
-        .about("Runs a command repeatedly and watches for output")
-        .setting(AppSettings::DisableVersion)
-        .arg(success_arg)
-        .arg(failure_arg)
-        .arg(timeout_arg)
-        .arg(interval_arg)
-        // Essential: Don't require "--" before `CMD ARGS...`.
-        .setting(AppSettings::TrailingVarArg)
-        .args(&Command::clap_args())
+    /// Report failure when matching text appears.
+    #[structopt(short = "f", long = "failure", value_name = "FAILURE_REGEX")]
+    failure: Option<Regex>,
+
+    /// Give up if nothing happens after a wait.
+    #[structopt(short = "t", long = "timeout", value_name = "SECONDS")]
+    timeout: Option<u64>,
+
+    /// Time to wait between runs.
+    #[structopt(
+        short = "n",
+        long = "interval",
+        value_name = "SECONDS",
+        default_value = "2"
+    )]
+    interval: u64,
+
+    /// The command to run, with any arguments.
+    cmd: Vec<String>,
 }
 
-pub fn run(
-    _global_args: &ArgMatches<'_>,
-    sub_args: &ArgMatches<'_>,
-    notifier: &dyn Notifier,
-) -> Result<()> {
-    let cmd = Command::from_arg_matches(sub_args)?;
-
-    // Parse our arguments.  We could do this in fewer lines of code by
-    // heavily using obscure Rust tricks, but I prefer clarity here.
-    let success_re: Option<Regex> = match sub_args.value_of("success") {
-        Some(s) => Some(Regex::new(s)?),
-        None => None,
-    };
-    let failure_re: Option<Regex> = match sub_args.value_of("failure") {
-        Some(s) => Some(Regex::new(s)?),
-        None => None,
-    };
-    let timeout: Option<u64> = match sub_args.value_of("timeout") {
-        Some(v) => Some(v.parse()?),
-        None => None,
-    };
-    let interval: u64 = match sub_args.value_of("interval") {
-        Some(v) => v.parse()?,
-        None => unreachable!("interval should have defaulted automatically"),
-    };
+pub fn run(opt: &Opt, notifier: &dyn Notifier) -> Result<()> {
+    let cmd = Command::from_slice(&opt.cmd)?;
 
     let start = time::SystemTime::now();
-    let end = timeout.map(|t_o| start + time::Duration::from_secs(t_o));
+    let end = opt
+        .timeout
+        .map(|t_o| start + time::Duration::from_secs(t_o));
 
     loop {
         // Run our command once, and figure out what to do.
@@ -112,7 +88,7 @@ pub fn run(
 
                 // Check for failure first so it takes priority.
                 for line in &all_lines {
-                    if let Some(ref re) = failure_re {
+                    if let Some(re) = &opt.failure {
                         if re.is_match(line) {
                             let notification = Notification::new(Outcome::Failure)
                                 .command(cmd.clone());
@@ -126,7 +102,7 @@ pub fn run(
 
                 // Check for success.
                 for line in &all_lines {
-                    if let Some(ref re) = success_re {
+                    if let Some(re) = &opt.success {
                         if re.is_match(line) {
                             let notification = Notification::new(Outcome::Success)
                                 .command(cmd.clone());
@@ -148,7 +124,7 @@ pub fn run(
         }
 
         // Wait until it's time to run again.
-        thread::sleep(time::Duration::from_secs(interval));
+        thread::sleep(time::Duration::from_secs(opt.interval));
     }
 }
 
