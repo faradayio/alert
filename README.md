@@ -31,7 +31,11 @@ API.)
 
 We also have support for desktop notifiations and the open
 source [Notify][] app, but the CLI for configurating them isn't finished
-yet.
+yet. To use desktop notifications, try:
+
+```sh
+export ALERT_NOTIFIER=desktop
+```
 
 [Pushover]: https://pushover.net/
 [Notify]: https://mashlol.github.io/notify/
@@ -59,4 +63,3 @@ Once this is done, install Rust and `alert`:
 curl https://sh.rustup.rs -sSf | sh
 cargo install alert
 ```
-
