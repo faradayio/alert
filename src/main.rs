@@ -1,9 +1,8 @@
 // `error_chain!` can recurse deeply
 #![recursion_limit = "1024"]
-
 // Enable clippy if we were asked to do so.
-#![cfg_attr(feature="clippy", feature(plugin))]
-#![cfg_attr(feature="clippy", plugin(clippy))]
+#![cfg_attr(feature = "clippy", feature(plugin))]
+#![cfg_attr(feature = "clippy", plugin(clippy))]
 
 extern crate clap;
 extern crate colored;

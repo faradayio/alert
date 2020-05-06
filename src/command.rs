@@ -40,9 +40,9 @@ impl Command {
             }
         }
         Ok(Command {
-               cmd: args[0].clone(),
-               args: args[1..].to_owned(),
-           })
+            cmd: args[0].clone(),
+            args: args[1..].to_owned(),
+        })
     }
 }
 

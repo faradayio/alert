@@ -1,6 +1,6 @@
 //! Our `alert run` subcommand.
 
-use clap::{App, ArgMatches, AppSettings, SubCommand};
+use clap::{App, AppSettings, ArgMatches, SubCommand};
 use std::process;
 
 use command::Command;
@@ -18,10 +18,11 @@ pub fn subcommand_definition() -> App<'static, 'static> {
         .args(&Command::clap_args())
 }
 
-pub fn run(_global_args: &ArgMatches,
-           sub_args: &ArgMatches,
-           notifier: &Notifier)
-           -> Result<()> {
+pub fn run(
+    _global_args: &ArgMatches,
+    sub_args: &ArgMatches,
+    notifier: &Notifier,
+) -> Result<()> {
     let cmd = Command::from_arg_matches(sub_args)?;
     let status = process::Command::new(&cmd.cmd)
         .args(&cmd.args)

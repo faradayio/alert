@@ -2,8 +2,8 @@
 
 use notify_rust;
 
-use errors::*;
 use super::{Notification, Notifier};
+use errors::*;
 
 /// Display notifications on the local machine using its GUI
 pub struct DesktopNotifier;

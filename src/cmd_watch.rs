@@ -1,6 +1,6 @@
 //! Our `alert run` subcommand.
 
-use clap::{App, Arg, ArgMatches, AppSettings, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use regex::Regex;
 use std::io;
 use std::io::prelude::*;
@@ -49,10 +49,11 @@ pub fn subcommand_definition() -> App<'static, 'static> {
         .args(&Command::clap_args())
 }
 
-pub fn run(_global_args: &ArgMatches,
-           sub_args: &ArgMatches,
-           notifier: &Notifier)
-           -> Result<()> {
+pub fn run(
+    _global_args: &ArgMatches,
+    sub_args: &ArgMatches,
+    notifier: &Notifier,
+) -> Result<()> {
     let cmd = Command::from_arg_matches(sub_args)?;
 
     // Parse our arguments.  We could do this in fewer lines of code by
@@ -78,7 +79,6 @@ pub fn run(_global_args: &ArgMatches,
     let end = timeout.map(|t_o| start + time::Duration::from_secs(t_o));
 
     loop {
-
         // Run our command once, and figure out what to do.
         match run_once(&cmd) {
             Err(err) => {
@@ -112,8 +112,9 @@ pub fn run(_global_args: &ArgMatches,
                             let notification = Notification::new(Outcome::Failure)
                                 .command(cmd.clone());
                             notifier.send(&notification)?;
-                            return Err(ErrorKind::CommandFailedOrTimedOut(None)
-                                           .into());
+                            return Err(
+                                ErrorKind::CommandFailedOrTimedOut(None).into()
+                            );
                         }
                     }
                 }
@@ -135,8 +136,8 @@ pub fn run(_global_args: &ArgMatches,
         // Check our timeout.
         if let Some(end) = end {
             if time::SystemTime::now() >= end {
-                let notification = Notification::new(Outcome::Timeout)
-                    .command(cmd.clone());
+                let notification =
+                    Notification::new(Outcome::Timeout).command(cmd.clone());
                 notifier.send(&notification)?;
                 return Err(ErrorKind::CommandFailedOrTimedOut(None).into());
             }

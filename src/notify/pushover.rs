@@ -8,8 +8,8 @@
 use reqwest;
 use std::env;
 
-use errors::*;
 use super::{Notification, Notifier, Outcome};
+use errors::*;
 
 /// Notify the user of an event using the pushover.net service from
 /// Superblock, LLC.
@@ -24,9 +24,9 @@ impl PushoverNotifier {
     /// Create a new notifier and configure it automatically.
     pub fn new() -> Result<PushoverNotifier> {
         Ok(PushoverNotifier {
-               token: env::var("PUSHOVER_TOKEN")?,
-               user: env::var("PUSHOVER_USER")?,
-           })
+            token: env::var("PUSHOVER_TOKEN")?,
+            user: env::var("PUSHOVER_USER")?,
+        })
     }
 }
 
@@ -38,11 +38,13 @@ impl Notifier for PushoverNotifier {
         };
 
         let client = reqwest::blocking::Client::new();
-        let params = [("token", &self.token[..]),
-                      ("user", &self.user[..]),
-                      ("title", &notification.title()),
-                      ("sound", sound),
-                      ("message", &notification.message())];
+        let params = [
+            ("token", &self.token[..]),
+            ("user", &self.user[..]),
+            ("title", &notification.title()),
+            ("sound", sound),
+            ("message", &notification.message()),
+        ];
         debug!("Sending notification via pushover");
         let response = client
             .post("https://api.pushover.net/1/messages.json")

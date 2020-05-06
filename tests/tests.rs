@@ -52,8 +52,8 @@ fn subcommand_run_handles_command_and_args() {
         .expect_success();
     testdir.expect_path("test.txt");
     assert!(output
-                .stderr_str()
-                .contains("Command succeeded: touch test.txt"));
+        .stderr_str()
+        .contains("Command succeeded: touch test.txt"));
 }
 
 #[test]
@@ -78,9 +78,7 @@ fn subcommand_watch_matches_success_pattern() {
         .args(&["watch", "-s", "good", "echo", "good"])
         .output()
         .expect_success();
-    assert!(output
-                .stderr_str()
-                .contains("Command succeeded: echo good"));
+    assert!(output.stderr_str().contains("Command succeeded: echo good"));
 }
 
 #[test]
