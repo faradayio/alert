@@ -7,7 +7,7 @@ use std::io;
 use std::io::prelude::*;
 
 use super::{Notification, Notifier, Outcome};
-use errors::*;
+use crate::errors::*;
 
 /// Notify the user of an event using the console.
 pub struct ConsoleNotifier;

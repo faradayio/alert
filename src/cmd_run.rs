@@ -3,9 +3,9 @@
 use clap::{App, AppSettings, ArgMatches, SubCommand};
 use std::process;
 
-use command::Command;
-use errors::*;
-use notify::{Notification, Notifier, Outcome};
+use crate::command::Command;
+use crate::errors::*;
+use crate::notify::{Notification, Notifier, Outcome};
 
 /// Return a `clap::SubCommand` specifying our arguments.
 pub fn subcommand_definition() -> App<'static, 'static> {
@@ -21,7 +21,7 @@ pub fn subcommand_definition() -> App<'static, 'static> {
 pub fn run(
     _global_args: &ArgMatches,
     sub_args: &ArgMatches,
-    notifier: &Notifier,
+    notifier: &dyn Notifier,
 ) -> Result<()> {
     let cmd = Command::from_arg_matches(sub_args)?;
     let status = process::Command::new(&cmd.cmd)

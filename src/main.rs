@@ -31,8 +31,8 @@ mod config;
 mod errors;
 mod notify;
 
-use errors::*;
-use notify::choose_notifier;
+use crate::errors::*;
+use crate::notify::choose_notifier;
 
 quick_main!(run);
 

@@ -8,8 +8,8 @@ mod desktop;
 mod notifyapp;
 mod pushover;
 
-use command::Command;
-use errors::*;
+use crate::command::Command;
+use crate::errors::*;
 
 /// A notification we want to send to the user.
 #[derive(Clone, Debug)]
@@ -92,7 +92,7 @@ pub trait Notifier {
 /// Choose an appropriate notifier backend to use.  We return a `Box`
 /// containing an object that implements the trait `Notifier`, which is about
 /// as close as Rust gets to object-oriented programming.
-pub fn choose_notifier() -> Result<Box<Notifier>> {
+pub fn choose_notifier() -> Result<Box<dyn Notifier>> {
     let name = env::var("ALERT_NOTIFIER").unwrap_or_else(|_| "pushover".to_owned());
     match &name[..] {
         "console" => Ok(Box::new(console::ConsoleNotifier)),

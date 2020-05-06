@@ -3,7 +3,7 @@
 use notify_rust;
 
 use super::{Notification, Notifier};
-use errors::*;
+use crate::errors::*;
 
 /// Display notifications on the local machine using its GUI
 pub struct DesktopNotifier;

@@ -8,7 +8,7 @@ use std::env;
 use std::num;
 use std::process::ExitStatus;
 
-use command::Command;
+use crate::command::Command;
 
 error_chain! {
     // Wrap errors provided by other libraries.

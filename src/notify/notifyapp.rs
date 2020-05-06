@@ -6,7 +6,7 @@ use reqwest;
 use std::env;
 
 use super::{Notification, Notifier};
-use errors::*;
+use crate::errors::*;
 
 /// Notify the user of an event using the pushover.net service from
 /// Superblock, LLC.

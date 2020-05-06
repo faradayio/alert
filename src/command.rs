@@ -5,7 +5,7 @@ use shell_escape;
 use std::borrow::Cow;
 use std::fmt;
 
-use errors::*;
+use crate::errors::*;
 
 /// A command and its arguments.  We use this as a wrapper for consistency.
 #[derive(Clone, Debug)]
