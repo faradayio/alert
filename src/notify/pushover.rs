@@ -5,6 +5,7 @@
 //! Pushover is a trademark of Superblock, LLC. This library is not associated
 //! with Superblock, LLC in any way.
 
+use log::debug;
 use std::env;
 
 use super::{Notification, Notifier, Outcome};

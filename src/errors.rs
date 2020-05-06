@@ -1,5 +1,6 @@
 //! Custom error types using the `error-chain` crate.
 
+use error_chain::error_chain;
 use std::env;
 use std::num;
 use std::process::ExitStatus;

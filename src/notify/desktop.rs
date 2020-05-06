@@ -1,5 +1,7 @@
 //! Display ordinary desktop notifications using standard OS features.
 
+use log::debug;
+
 use super::{Notification, Notifier};
 use crate::errors::*;
 

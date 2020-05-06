@@ -1,5 +1,6 @@
 //! Configuration support.
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// A parsed version of our configuration file.

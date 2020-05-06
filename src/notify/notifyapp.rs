@@ -2,6 +2,7 @@
 //!
 //! [Notify]: https://github.com/mashlol/notify
 
+use log::debug;
 use std::env;
 
 use super::{Notification, Notifier};

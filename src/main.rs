@@ -1,14 +1,9 @@
 // `error_chain!` can recurse deeply
 #![recursion_limit = "1024"]
 
-#[macro_use]
-extern crate error_chain;
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate serde_derive;
-
 use clap::{App, AppSettings};
+use error_chain::quick_main;
+use log::debug;
 use std::process;
 
 mod cmd_run;
