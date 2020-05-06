@@ -1,5 +1,3 @@
-extern crate cli_test_dir;
-
 use cli_test_dir::*;
 use std::env;
 

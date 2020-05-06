@@ -1,7 +1,5 @@
 //! Display ordinary desktop notifications using standard OS features.
 
-use notify_rust;
-
 use super::{Notification, Notifier};
 use crate::errors::*;
 

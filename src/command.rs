@@ -1,7 +1,6 @@
 //! A command and its arguments.
 
 use clap::{Arg, ArgMatches};
-use shell_escape;
 use std::borrow::Cow;
 use std::fmt;
 
@@ -32,7 +31,7 @@ impl Command {
     }
 
     /// Given a `clap::ArgMatches`, create a new `Command`.
-    pub fn from_arg_matches(arg_matches: &ArgMatches) -> Result<Command> {
+    pub fn from_arg_matches(arg_matches: &ArgMatches<'_>) -> Result<Command> {
         let mut args: Vec<String> = vec![];
         if let Some(arg_iter) = arg_matches.values_of("COMMAND") {
             for arg in arg_iter {
@@ -47,7 +46,7 @@ impl Command {
 }
 
 impl fmt::Display for Command {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.cmd)?;
         for arg in &self.args {
             write!(f, " {}", shell_escape::escape(Cow::Borrowed(arg)))?;

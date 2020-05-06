@@ -50,8 +50,8 @@ pub fn subcommand_definition() -> App<'static, 'static> {
 }
 
 pub fn run(
-    _global_args: &ArgMatches,
-    sub_args: &ArgMatches,
+    _global_args: &ArgMatches<'_>,
+    sub_args: &ArgMatches<'_>,
     notifier: &dyn Notifier,
 ) -> Result<()> {
     let cmd = Command::from_arg_matches(sub_args)?;
@@ -136,8 +136,7 @@ pub fn run(
         // Check our timeout.
         if let Some(end) = end {
             if time::SystemTime::now() >= end {
-                let notification =
-                    Notification::new(Outcome::Timeout).command(cmd.clone());
+                let notification = Notification::new(Outcome::Timeout).command(cmd);
                 notifier.send(&notification)?;
                 return Err(ErrorKind::CommandFailedOrTimedOut(None).into());
             }

@@ -1,9 +1,5 @@
 //! Custom error types using the `error-chain` crate.
 
-#[cfg(feature = "notify-rust")]
-use notify_rust;
-use regex;
-use reqwest;
 use std::env;
 use std::num;
 use std::process::ExitStatus;

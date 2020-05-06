@@ -4,22 +4,12 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
-extern crate clap;
-extern crate colored;
 #[macro_use]
 extern crate error_chain;
-extern crate env_logger;
 #[macro_use]
 extern crate log;
-#[cfg(feature = "notify-rust")]
-extern crate notify_rust;
-extern crate regex;
-extern crate reqwest;
-extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate shell_escape;
-extern crate toml;
 
 use clap::{App, AppSettings};
 use std::process;

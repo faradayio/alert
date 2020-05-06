@@ -19,8 +19,8 @@ pub fn subcommand_definition() -> App<'static, 'static> {
 }
 
 pub fn run(
-    _global_args: &ArgMatches,
-    sub_args: &ArgMatches,
+    _global_args: &ArgMatches<'_>,
+    sub_args: &ArgMatches<'_>,
     notifier: &dyn Notifier,
 ) -> Result<()> {
     let cmd = Command::from_arg_matches(sub_args)?;
@@ -28,8 +28,8 @@ pub fn run(
         .args(&cmd.args)
         .status()
         .chain_err(|| ErrorKind::CouldNotRun((&cmd).to_owned()))?;
-    let notification = Notification::new(Outcome::from_bool(status.success()))
-        .command(cmd.to_owned());
+    let notification =
+        Notification::new(Outcome::from_bool(status.success())).command(cmd);
     notifier.send(&notification)?;
     if status.success() {
         Ok(())

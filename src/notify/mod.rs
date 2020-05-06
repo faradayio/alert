@@ -22,7 +22,7 @@ impl Notification {
     /// Create a new notification.
     pub fn new(outcome: Outcome) -> Notification {
         Notification {
-            outcome: outcome,
+            outcome,
             command: None,
         }
     }

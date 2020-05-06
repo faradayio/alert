@@ -2,7 +2,6 @@
 //!
 //! [Notify]: https://github.com/mashlol/notify
 
-use reqwest;
 use std::env;
 
 use super::{Notification, Notifier};
