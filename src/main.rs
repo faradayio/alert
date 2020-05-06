@@ -2,7 +2,6 @@
 #![recursion_limit = "1024"]
 
 use clap::{App, AppSettings};
-use error_chain::quick_main;
 use log::debug;
 use std::process;
 
@@ -16,7 +15,14 @@ mod notify;
 use crate::errors::*;
 use crate::notify::choose_notifier;
 
-quick_main!(run);
+fn main() {
+    if let Err(err) = run() {
+        // Our only "wrapper" errors print out the original error, too, so don't
+        // worry about printing our original errors.
+        eprintln!("ERROR: {}", err);
+        process::exit(1);
+    }
+}
 
 fn run() -> Result<()> {
     env_logger::init();
@@ -49,12 +55,12 @@ fn run() -> Result<()> {
     // Handle `CommandFailedOrTimedOut` specially, and pass everything else
     // through to `quick_main!`.
     if let Err(ref err) = result {
-        if let ErrorKind::CommandFailedOrTimedOut(ref status) = *err.kind() {
+        if let Error::CommandFailedOrTimedOut { status } = err {
             // We've already notified the user of this failure, but we still
             // need to exit with the right status code.
             //
             // TODO: We might be able to use Unix-specific Rust APIs to
-            // preserve the exit status when the child process is terminate
+            // preserve the exit status when the child process is terminated
             // by a signal, too.
             let code = status.and_then(|s| s.code()).unwrap_or(1);
             debug!("Exiting with code {}", code);

@@ -27,13 +27,18 @@ pub fn run(
     let status = process::Command::new(&cmd.cmd)
         .args(&cmd.args)
         .status()
-        .chain_err(|| ErrorKind::CouldNotRun((&cmd).to_owned()))?;
+        .map_err(|source| Error::CouldNotRun {
+            cmd: (&cmd).to_owned(),
+            source,
+        })?;
     let notification =
         Notification::new(Outcome::from_bool(status.success())).command(cmd);
     notifier.send(&notification)?;
     if status.success() {
         Ok(())
     } else {
-        Err(ErrorKind::CommandFailedOrTimedOut(Some(status)).into())
+        Err(Error::CommandFailedOrTimedOut {
+            status: Some(status),
+        })
     }
 }

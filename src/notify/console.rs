@@ -3,8 +3,6 @@
 //! the CLI.
 
 use colored::*;
-use std::io;
-use std::io::prelude::*;
 
 use super::{Notification, Notifier, Outcome};
 use crate::errors::*;
@@ -19,12 +17,7 @@ impl Notifier for ConsoleNotifier {
             Outcome::Success => label.green().bold(),
             Outcome::Failure | Outcome::Timeout => label.red().bold(),
         };
-        writeln!(
-            &mut io::stderr(),
-            "{} {}",
-            color_label,
-            notification.message().bold()
-        )
-        .chain_err(|| -> Error { "Could not write to stderr".into() })
+        eprintln!("{} {}", color_label, notification.message().bold());
+        Ok(())
     }
 }

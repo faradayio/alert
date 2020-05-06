@@ -8,8 +8,7 @@ use std::env;
 use super::{Notification, Notifier};
 use crate::errors::*;
 
-/// Notify the user of an event using the pushover.net service from
-/// Superblock, LLC.
+/// Notify the user of an event using the open source Notify app.
 pub struct NotifyAppNotifier {
     /// Registration key.
     key: String,
@@ -44,7 +43,9 @@ impl Notifier for NotifyAppNotifier {
         if response.status().is_success() {
             Ok(())
         } else {
-            Err("Could not send notification using Notify app".into())
+            Err(Error::CouldNotSendNotification {
+                service: "Notify app".to_owned(),
+            })
         }
     }
 }

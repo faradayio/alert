@@ -82,19 +82,24 @@ pub fn run(
         // Run our command once, and figure out what to do.
         match run_once(&cmd) {
             Err(err) => {
-                writeln!(&mut io::stderr(), "{}", err)
-                    .chain_err(|| "Could not write to stderr")?;
+                eprintln!("{}", err);
             }
             Ok(output) => {
                 // Print out the command's output. We end up undoing any
                 // interleaving in the original output, but it would take a
                 // fair bit more code to avoid this.
-                io::stdout()
-                    .write(&output.stdout)
-                    .chain_err(|| "Could not write to stdout")?;
-                io::stderr()
-                    .write(&output.stderr)
-                    .chain_err(|| "Could not write to stderr")?;
+                io::stdout().write(&output.stdout).map_err(|source| {
+                    Error::CouldNotWriteToStdio {
+                        dest: "stdout",
+                        source,
+                    }
+                })?;
+                io::stderr().write(&output.stderr).map_err(|source| {
+                    Error::CouldNotWriteToStdio {
+                        dest: "stderr",
+                        source,
+                    }
+                })?;
 
                 // Convert stdout and stderr to a vector of lines so we
                 // can easily search them both.  (There are other reasonable
@@ -112,9 +117,9 @@ pub fn run(
                             let notification = Notification::new(Outcome::Failure)
                                 .command(cmd.clone());
                             notifier.send(&notification)?;
-                            return Err(
-                                ErrorKind::CommandFailedOrTimedOut(None).into()
-                            );
+                            return Err(Error::CommandFailedOrTimedOut {
+                                status: None,
+                            });
                         }
                     }
                 }
@@ -138,7 +143,7 @@ pub fn run(
             if time::SystemTime::now() >= end {
                 let notification = Notification::new(Outcome::Timeout).command(cmd);
                 notifier.send(&notification)?;
-                return Err(ErrorKind::CommandFailedOrTimedOut(None).into());
+                return Err(Error::CommandFailedOrTimedOut { status: None });
             }
         }
 
@@ -152,6 +157,9 @@ pub fn run_once(cmd: &Command) -> Result<process::Output> {
     let output = process::Command::new(&cmd.cmd)
         .args(&cmd.args)
         .output()
-        .chain_err(|| ErrorKind::CouldNotRun(cmd.to_owned()))?;
+        .map_err(|source| Error::CouldNotRun {
+            cmd: cmd.to_owned(),
+            source,
+        })?;
     Ok(output)
 }

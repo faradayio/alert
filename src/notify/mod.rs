@@ -100,6 +100,6 @@ pub fn choose_notifier() -> Result<Box<dyn Notifier>> {
         "desktop" => Ok(Box::new(desktop::DesktopNotifier)),
         "notifyapp" => Ok(Box::new(notifyapp::NotifyAppNotifier::new()?)),
         "pushover" => Ok(Box::new(pushover::PushoverNotifier::new()?)),
-        _ => Err(format!("Unknown notifier: {}", name).into()),
+        _ => Err(Error::UnknownNotifier { name }),
     }
 }

@@ -54,7 +54,9 @@ impl Notifier for PushoverNotifier {
         if response.status().is_success() {
             Ok(())
         } else {
-            Err("could not send notification using pushover.net".into())
+            Err(Error::CouldNotSendNotification {
+                service: "pushover.net".to_owned(),
+            })
         }
     }
 }
