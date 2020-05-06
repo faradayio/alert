@@ -1,7 +1,3 @@
-// `error_chain!` can recurse deeply
-#![recursion_limit = "1024"]
-
-use clap::{App, AppSettings};
 use log::debug;
 use std::process;
 use structopt::StructOpt;
@@ -12,6 +8,7 @@ mod command;
 mod config;
 mod errors;
 mod notify;
+mod util;
 
 use crate::errors::*;
 use crate::notify::choose_notifier;

@@ -3,10 +3,10 @@
 //! [Notify]: https://github.com/mashlol/notify
 
 use log::debug;
-use std::env;
 
 use super::{Notification, Notifier};
 use crate::errors::*;
+use crate::util::env_var;
 
 /// Notify the user of an event using the open source Notify app.
 pub struct NotifyAppNotifier {
@@ -18,7 +18,7 @@ impl NotifyAppNotifier {
     /// Create a new notifier and configure it automatically.
     pub fn new() -> Result<NotifyAppNotifier> {
         Ok(NotifyAppNotifier {
-            key: env::var("NOTIFYAPP_KEY")?,
+            key: env_var("NOTIFYAPP_KEY")?,
         })
     }
 }

@@ -22,9 +22,6 @@ pub enum Error {
     Desktop(#[from] notify_rust::Error),
 
     #[error(transparent)]
-    Env(#[from] env::VarError),
-
-    #[error(transparent)]
     ParseInt(#[from] num::ParseIntError),
 
     #[error(transparent)]
@@ -43,7 +40,7 @@ pub enum Error {
     CommandFailedOrTimedOut { status: Option<ExitStatus> },
 
     /// An error occurred running an external command.
-    #[error("Could not run {}: {}", .cmd, .source)]
+    #[error("Could not run {} ({})", .cmd, .source)]
     CouldNotRun { cmd: Command, source: io::Error },
 
     /// The notify app failed for some reason.
@@ -51,11 +48,15 @@ pub enum Error {
     CouldNotSendNotification { service: String },
 
     /// We could not write to either stdout or stderr.
-    #[error("Could not write to {}: {}", .dest, .source)]
+    #[error("Could not write to {} ({})", .dest, .source)]
     CouldNotWriteToStdio {
         dest: &'static str,
         source: io::Error,
     },
+
+    /// We could not read an environment variable.
+    #[error("Could not read environment variable {} ({})", .name, .source)]
+    Env { name: String, source: env::VarError },
 
     /// No command to run was specified.
     #[error("No command to run was specified")]

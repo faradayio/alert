@@ -6,10 +6,10 @@
 //! with Superblock, LLC in any way.
 
 use log::debug;
-use std::env;
 
 use super::{Notification, Notifier, Outcome};
 use crate::errors::*;
+use crate::util::env_var;
 
 /// Notify the user of an event using the pushover.net service from
 /// Superblock, LLC.
@@ -24,8 +24,8 @@ impl PushoverNotifier {
     /// Create a new notifier and configure it automatically.
     pub fn new() -> Result<PushoverNotifier> {
         Ok(PushoverNotifier {
-            token: env::var("PUSHOVER_TOKEN")?,
-            user: env::var("PUSHOVER_USER")?,
+            token: env_var("PUSHOVER_TOKEN")?,
+            user: env_var("PUSHOVER_USER")?,
         })
     }
 }
