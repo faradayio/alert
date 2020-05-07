@@ -30,37 +30,14 @@ enum Opt {
     },
 }
 
+/// Our main entry point. Calls `run` and reports errors to the user.
 fn main() {
-    if let Err(err) = run() {
-        // Our only "wrapper" errors print out the original error, too, so don't
-        // worry about printing our original errors.
-        eprintln!("ERROR: {}", err);
-        process::exit(1);
-    }
-}
-
-fn run() -> Result<()> {
     env_logger::init();
 
-    // Parse our command-line arguments.
-    let opt = Opt::from_args();
-    debug!("Arguments: {:#?}", opt);
-
-    // Create our notifier _now_ before running any multi-hour subcommands, so
-    // that it has a chance to make sure it's configured correctly while the
-    // user is still watching.
-    let notifier = choose_notifier()?;
-
-    // Run a subcommand.
-    let result = match &opt {
-        Opt::Run { run_opt } => cmd_run::run(run_opt, notifier.as_ref()),
-        Opt::Watch { watch_opt } => cmd_watch::run(watch_opt, notifier.as_ref()),
-    };
-
-    // Handle `CommandFailedOrTimedOut` specially, and pass everything else
-    // through to `quick_main!`.
-    if let Err(ref err) = result {
-        if let Error::CommandFailedOrTimedOut { status } = err {
+    // Call our `run` function and report any errors to the user.
+    match run() {
+        Ok(()) => {}
+        Err(Error::CommandFailedOrTimedOut { status }) => {
             // We've already notified the user of this failure, but we still
             // need to exit with the right status code.
             //
@@ -71,6 +48,29 @@ fn run() -> Result<()> {
             debug!("Exiting with code {}", code);
             process::exit(code);
         }
+        Err(err) => {
+            // Our only "wrapper" errors print out the original error, too, so don't
+            // worry about printing our original errors.
+            eprintln!("ERROR: {}", err);
+            process::exit(1);
+        }
     }
-    result
+}
+
+/// Do the actual work.
+fn run() -> Result<()> {
+    // Parse our command-line arguments.
+    let opt = Opt::from_args();
+    debug!("Arguments: {:#?}", opt);
+
+    // Create our notifier _now_ before running any multi-hour subcommands, so
+    // that it has a chance to make sure it's configured correctly while the
+    // user is still watching.
+    let notifier = choose_notifier()?;
+
+    // Run a subcommand.
+    match &opt {
+        Opt::Run { run_opt } => cmd_run::run(run_opt, notifier.as_ref()),
+        Opt::Watch { watch_opt } => cmd_watch::run(watch_opt, notifier.as_ref()),
+    }
 }

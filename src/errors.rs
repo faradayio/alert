@@ -43,13 +43,14 @@ pub enum Error {
     #[error("Could not run {} ({})", .cmd, .source)]
     CouldNotRun { cmd: Command, source: io::Error },
 
-    /// The notify app failed for some reason.
+    /// The notify app failed for some unspecified reason.
     #[error("Could not send notification using {}", .service)]
     CouldNotSendNotification { service: String },
 
     /// We could not write to either stdout or stderr.
     #[error("Could not write to {} ({})", .dest, .source)]
     CouldNotWriteToStdio {
+        /// Either `"stdout"` or `"stderr"`.
         dest: &'static str,
         source: io::Error,
     },
